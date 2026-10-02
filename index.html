@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>reveal</title>
+<style>
+html,body{margin:0;height:100%;background:#0b0f0b;color:#33ff66;font-family:Menlo,Consolas,monospace}
+#t{padding:18px;font-size:clamp(14px,3.6vw,22px);line-height:1.6;white-space:pre-wrap}
+.err{color:#ff5555}.dim{color:#7fbf8f}
+#tap{position:fixed;bottom:16px;left:0;right:0;text-align:center;color:#7fbf8f;font-size:14px}
+#boy{display:none;position:fixed;inset:0;background:#2b8cff;color:#fff;text-align:center;flex-direction:column;align-items:center;justify-content:center;font-family:-apple-system,Helvetica,Arial,sans-serif}
+#boy h1{font-size:clamp(64px,22vw,200px);margin:0}
+#boy p{font-size:clamp(20px,5vw,36px);margin:8px 20px}
+</style></head><body>
+<div id="t"></div><div id="tap">Tap to run</div>
+<div id="boy"><h1>IT'S A BOY!</h1><p>Baby #2 — build succeeded 🎉💙</p><p>The big brother is about to have a little brother!</p></div>
+<script>
+const lines=[
+["$ git clone family.git && cd family",""],
+["$ ./gender_reveal --baby 2",""],
+["Loading ultrasound data... ok","dim"],
+["Running DNA gender classifier v2.0...","dim"],
+["> probability(girl) = 0.00","err"],
+["Uncaught Exception: GirlNotFoundError at baby.gender (line 2)","err"],
+["Attempting fallback...",""],
+["$ sudo chmod +x boy.sh",""],
+["> probability(boy)  = 1.00",""],
+["Compiling... ██████████ 100%",""],
+["Build succeeded: 1 boy, 0 errors, 0 warnings",""],
+["Deploying to production... ✔","dim"]];
+const t=document.getElementById('t');let started=false;
+function sleep(ms){return new Promise(r=>setTimeout(r,ms))}
+async function run(){
+ document.getElementById('tap').style.display='none';
+ for(const [s,c] of lines){
+  const d=document.createElement('div');if(c)d.className=c;t.appendChild(d);
+  for(const ch of s){d.textContent+=ch;await sleep(25)}
+  await sleep(600);
+ }
+ await sleep(800);
+ const b=document.getElementById('boy');b.style.display='flex';
+}
+document.body.addEventListener('click',()=>{if(!started){started=true;run()}});
+if(location.hash==='#auto'){started=true;run()}
+</script></body></html>
