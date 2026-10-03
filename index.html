@@ -9,8 +9,20 @@ html,body{margin:0;height:100%;background:#0b0f0b;color:#33ff66;font-family:Menl
 #boy{display:none;position:fixed;inset:0;background:#2b8cff;color:#fff;text-align:center;flex-direction:column;align-items:center;justify-content:center;font-family:-apple-system,Helvetica,Arial,sans-serif}
 #boy h1{font-size:clamp(64px,22vw,200px);margin:0}
 #boy p{font-size:clamp(20px,5vw,36px);margin:8px 20px}
+#lock{position:fixed;inset:0;background:#0b0f0b;z-index:5;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;box-sizing:border-box}
+#lock h2{color:#33ff66;font-size:clamp(18px,5vw,26px);margin:0 0 6px;text-align:center}
+#lock p{color:#7fbf8f;margin:0 0 18px;font-size:14px;text-align:center}
+#lock label{color:#33ff66;font-size:14px;align-self:stretch;max-width:340px;width:100%;margin:8px auto 2px}
+#lock input{width:100%;max-width:340px;box-sizing:border-box;background:#000;color:#33ff66;border:1px solid #33ff66;border-radius:6px;padding:12px;font:inherit;font-size:18px;letter-spacing:1px}
+#lock button{margin-top:18px;background:#33ff66;color:#000;border:0;border-radius:6px;padding:12px 28px;font:inherit;font-size:18px;font-weight:bold}
+#msg{color:#ff5555;height:20px;margin-top:10px;font-size:14px}
 </style></head><body>
-<div id="t"></div><div id="tap">Tap to run</div>
+<div id="lock"><h2>🔒 ACCESS KEY REQUIRED</h2><p>Enter 3 birthdays to unlock (YYYY-MM-DD)</p>
+<label>Dad</label><input id="b1" inputmode="numeric" placeholder="YYYY-MM-DD">
+<label>Mom</label><input id="b2" inputmode="numeric" placeholder="YYYY-MM-DD">
+<label>Big brother</label><input id="b3" inputmode="numeric" placeholder="YYYY-MM-DD">
+<button id="go">UNLOCK</button><div id="msg"></div></div>
+<div id="t"></div>
 <div id="boy"><h1>IT'S A BOY!</h1><p>Baby #2 — build succeeded 🎉💙</p><p>The big brother is about to have a little brother!</p></div>
 <script>
 const lines=[
@@ -29,7 +41,7 @@ const lines=[
 const t=document.getElementById('t');let started=false;
 function sleep(ms){return new Promise(r=>setTimeout(r,ms))}
 async function run(){
- document.getElementById('tap').style.display='none';
+ 
  for(const [s,c] of lines){
   const d=document.createElement('div');if(c)d.className=c;t.appendChild(d);
   for(const ch of s){d.textContent+=ch;await sleep(25)}
@@ -38,6 +50,16 @@ async function run(){
  await sleep(800);
  const b=document.getElementById('boy');b.style.display='flex';
 }
-document.body.addEventListener('click',()=>{if(!started){started=true;run()}});
-if(location.hash==='#auto'){started=true;run()}
+
+
+const H=["4a0e561bf9c8dfb81a35673b11639bbd0e1c2b636140bbf685ccd32193a05367", "c28dc1c6cc690308ad64e7540ca7f2040403b0203750ac57d7d546c05b14bf80", "92e427bc8be4b59de52d2288e88015db9fc181dcc03f47982ebd39d36f1afd62"];
+async function sha(s){const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode('rv:'+s));return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')}
+document.getElementById('go').addEventListener('click',async e=>{
+ e.stopPropagation();
+ const m=document.getElementById('msg');let ok=true;
+ for(let i=0;i<3;i++){const v=document.getElementById('b'+(i+1)).value.replace(/\D/g,'');if(await sha(v)!==H[i]){ok=false}}
+ if(!ok){m.textContent='ACCESS DENIED: wrong birthday(s). Try again.';return}
+ document.getElementById('lock').style.display='none';
+ if(!started){started=true;run()}
+});
 </script></body></html>
